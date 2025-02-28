@@ -1,7 +1,4 @@
-import 'prismjs';
-import 'prismjs/components/prism-javascript'; // Ensure JavaScript syntax is loaded
-import 'prismjs/themes/prism.css'; // Import Prism theme
-import './style.css';
+import './style.css'
 import { WebContainer } from '@webcontainer/api';
 import { files } from './files';
 
@@ -9,75 +6,66 @@ import { files } from './files';
 let webcontainerInstance;
 
 window.addEventListener('load', async () => {
-  const textareaEl = document.querySelector('#codeTextArea');
-  const codePreviewEl = document.querySelector('#codePreview');
+  textareaEl.value = files['index.js'].file.contents;
+  textareaEl.addEventListener('input', (e) => {
+    writeIndexJS(e.currentTarget.value);
+  });
 
-  textareaEl.value = `import express from 'express';
-const app = express();
-const port = 3111;
+  // Call only once
+  webcontainerInstance = await WebContainer.boot();
+  await webcontainerInstance.mount(files);
 
-app.get('/', (req, res) => {
-  res.send('Welcome to a WebContainers app! 🥳');
-});
-
-app.listen(port, () => {
-  console.log(\`App is live at http://localhost:\${port}\`);
-});`;
-
-  // Sync textarea with PrismJS preview
-  const updatePreview = () => {
-    codePreviewEl.textContent = textareaEl.value;
-    Prism.highlightElement(codePreviewEl);
+  const exitCode = await installDependencies();
+  if (exitCode !== 0) {
+    throw new Error('Installation failed');
   };
 
-  textareaEl.addEventListener('input', updatePreview);
-  updatePreview();
+  startDevServer();
 });
 
-// Modify your HTML structure
+async function installDependencies() {
+  // Install dependencies
+  const installProcess = await webcontainerInstance.spawn('npm', ['install']);
+  installProcess.output.pipeTo(new WritableStream({
+    write(data) {
+      console.log(data);
+    }
+  }))
+  // Wait for install command to exit
+  return installProcess.exit;
+}
+
+async function startDevServer() {
+  // Run `npm run start` to start the Express app
+  await webcontainerInstance.spawn('npm', ['run', 'start']);
+
+  // Wait for `server-ready` event
+  webcontainerInstance.on('server-ready', (port, url) => {
+    iframeEl.src = url;
+  });
+}
+
+/**
+ * @param {string} content
+ */
+
+async function writeIndexJS(content) {
+  await webcontainerInstance.fs.writeFile('/index.js', content);
+}
+
 document.querySelector('#app').innerHTML = `
   <div class="container">
     <div class="editor">
-      <textarea id="codeTextArea"></textarea>
+      <textarea>I am a textarea</textarea>
     </div>
     <div class="preview">
-      <pre><code id="codePreview" class="language-javascript"></code></pre>
+      <iframe src="loading.html"></iframe>
     </div>
   </div>
-`;
+`
 
-// document.querySelector('#app').innerHTML = `
-//   <div class="container">
-//     <div class="editor">
-//       <textarea id="codeTextArea">I am a textarea</textarea>
-//     </div>
-//     <div class="preview">
-//       <iframe src="loading.html"></iframe>
-//     </div>
-//   </div>
-// `
+/** @type {HTMLIFrameElement | null} */
+const iframeEl = document.querySelector('iframe');
 
-// import './style.css'
-// import javascriptLogo from './javascript.svg'
-// import viteLogo from '/vite.svg'
-// import { setupCounter } from './counter.js'
-
-// document.querySelector('#app').innerHTML = `
-//   <div>
-//     <a href="https://vite.dev" target="_blank">
-//       <img src="${viteLogo}" class="logo" alt="Vite logo" />
-//     </a>
-//     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-//       <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-//     </a>
-//     <h1>Hello Vite!</h1>
-//     <div class="card">
-//       <button id="counter" type="button"></button>
-//     </div>
-//     <p class="read-the-docs">
-//       Click on the Vite logo to learn more
-//     </p>
-//   </div>
-// `
-
-// setupCounter(document.querySelector('#counter'))
+/** @type {HTMLTextAreaElement | null} */
+const textareaEl = document.querySelector('textarea');

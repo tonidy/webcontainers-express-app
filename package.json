@@ -17,7 +17,6 @@
     ]
   },
   "dependencies": {
-    "@webcontainer/api": "1.5.1-internal.9",
-    "prismjs": "^1.29.0"
+    "@webcontainer/api": "1.5.1-internal.9"
   }
 }
