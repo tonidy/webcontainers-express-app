@@ -1,223 +1,101 @@
+/* Reset box-sizing */
 * {
   box-sizing: border-box;
-}
-
-body {
   margin: 0;
+  padding: 0;
+}
+
+body, html {
   height: 100vh;
+  width: 100vw;
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  overflow: hidden;
+  display: flex;
 }
 
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+/* Ensure #app takes full space */
+#app {
+  width: 100%;
   height: 100%;
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-textarea {
-  width: 100%;
-  height: 600px;
-  resize: none;
-  border-radius: 0.75rem; /* Slightly more rounded corners */
-  padding: 0.75rem 1.25rem; /* Adjusted padding */
-  border: none; /* No border for a cleaner look */
-  background-color: #f0f2f5; /* Even lighter background */
-  color: #2d3748; /* Darker text for better contrast */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Softer, more modern shadow */
-  transition: box-shadow 0.3s; /* Smooth shadow transition */
-  font-size: 1rem; /* Explicit font size for better control */
-  font-family: 'Inter', sans-serif; /* Modern sans-serif font (assuming Inter is available or a system sans-serif) */
+/* Fix `.container` to ensure full-screen width and height */
+.container {
+  display: flex;
+  flex-direction: row; /* Side-by-side layout */
+  gap: 1rem;
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  align-items: stretch;
+  justify-content: space-between;
 }
 
-textarea:focus {
-  outline: none; /* Remove focus outline */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow on focus */
+/* Editor section */
+.editor {
+  flex: 1; /* Take 50% of the space */
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
-textarea::placeholder {
-  color: #a0aec0; /* Lighter placeholder text */
+/* Ensure CodeMirror Editor Fills the Editor Section */
+.cm-editor {
+  flex: 1;
+  height: 100vh !important;
+  width: 100% !important;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 1.2rem;
+  background-color: #282c34;
+  color: #abb2bf;
+  border-radius: 0;
+  border: none;
 }
 
+/* Fix padding issue inside CodeMirror */
+.cm-scroller {
+  padding: 1rem !important;
+}
+
+/* Preview section */
+.preview {
+  flex: 1; /* Take 50% of the space */
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure iframe fills the preview */
 iframe {
   height: 100%;
   width: 100%;
-  border-radius: 0.5rem;
+  border-radius: 0;
+  border: none;
+  background: #f0f0f0;
 }
 
-/* Ensure Prism.js syntax highlighting works */
-pre {
-  background: #282c34; /* Dark background */
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  font-size: 1rem;
-  color: #abb2bf; /* Light text color */
-  line-height: 1.5;
-}
-
-code {
-  font-family: 'Fira Code', 'Courier New', monospace;
-}
-
-/* Prism.js token styling */
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-  color: #5c6370;
-}
-
-.token.punctuation {
-  color: #abb2bf;
-}
-
-.token.property,
-.token.tag,
-.token.constant,
-.token.symbol,
-.token.deleted {
-  color: #e06c75;
-}
-
-.token.boolean,
-.token.number {
-  color: #d19a66;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-  color: #98c379;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.token.variable {
-  color: #56b6c2;
-}
-
-.token.keyword {
-  color: #c678dd;
-}
-
-.token.function {
-  color: #61afef;
-}
-
-.token.regex,
-.token.important {
-  color: #c678dd;
-}
-
-.token.important,
-.token.bold {
-  font-weight: bold;
-}
-
-#codePreview {
-  display: block;
-  min-height: 300px;
-  padding: 1rem;
-}
-
-/* :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #f7df1eaa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Mobile Layout: Stack elements vertically */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+    height: auto;
   }
-  a:hover {
-    color: #747bff;
+
+  .editor, .preview {
+    height: 50vh;
   }
-  button {
-    background-color: #f9f9f9;
-  }
-} */
+}
